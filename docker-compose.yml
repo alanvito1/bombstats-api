@@ -1,58 +1,28 @@
-services:
-  # bombstats-nginx:
-  #   container_name: bombstats-nginx
-  #   image: nginx:alpine
-  #   depends_on:
-  #     - bombstats-api
-  #   ports:
-  #     - 80:80
-  #     - 443:443
-  #   volumes:
-  #     - ./nginx.conf:/etc/nginx/nginx.conf:ro
-  #     - ./ssl:/etc/nginx/ssl:ro
-  #   networks:
-  #     - bombstats-network
-  # bombstats-api:
-  #   container_name: bombstats-api
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   restart: unless-stopped
-  #   depends_on:
-  #     - bombstats-db
-  #     - bombstats-redis
-  #   env_file:
-  #     - .env
-  #   environment:
-  #     DB_HOST: bombstats-db
-  #   ports:
-  #     - 3000:3000
-  #   networks:
-  #     - bombstats-network
-  bombstats-db:
-    container_name: bombstats-db
-    platform: linux/x86_64
-    image: mysql:8.0
-    restart: unless-stopped
-    volumes:
-      - bombstats-db:/var/lib/mysql
-    ports:
-      - 3306:3306
-    env_file:
-      - .env
-    networks:
-      - bombstats-network
-  bombstats-redis:
-    image: redis:6.2
-    container_name: redis
-    restart: unless-stopped
-    ports:
-      - 6379:6379
-    networks:
-      - bombstats-network
-volumes:
-  bombstats-db:
+version: '3.8'
 
-networks:
-  bombstats-network:
-    external: true
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: bombstats_postgres
+    environment:
+      POSTGRES_USER: ${DB_USER:-root}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-dbsenha}
+      POSTGRES_DB: ${DB_NAME:-dbname}
+    ports:
+      - "${DB_PORT:-3306}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+  redis:
+    image: redis:7-alpine
+    container_name: bombstats_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: always
+
+volumes:
+  postgres_data:
+  redis_data:

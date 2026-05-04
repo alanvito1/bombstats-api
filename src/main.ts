@@ -1,26 +1,21 @@
-import { startRpcStatusUpdater } from '@/utils/web3/web3';
-import { BaseExceptionFilter, NestFactory } from '@nestjs/core';
-// import * as Sentry from '@sentry/nestjs';
+import { NestFactory } from '@nestjs/core';
+import {
+  FastifyAdapter,
+  NestFastifyApplication,
+} from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
-import './instrument';
-import * as admin from 'firebase-admin';
-import * as fireBaseConfig from '@/../firebase.json';
 
 async function bootstrap() {
-  console.log('Starting');
-  await startRpcStatusUpdater();
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestFastifyApplication>(
+    AppModule,
+    new FastifyAdapter({ logger: true })
+  );
 
   app.enableCors();
-  // Sentry.setupNestErrorHandler(
-  //   app,
-  //   new BaseExceptionFilter(app.getHttpAdapter()),
-  // );
-  admin.initializeApp({
-    credential: admin.credential.cert(fireBaseConfig as any),
-  });
 
-  // await updateProxies();
-  await app.listen(3000);
+  const port = process.env.PORT || 3000;
+  // Listen on 0.0.0.0 for Docker container mapping
+  await app.listen(port, '0.0.0.0');
+  console.log(`BombCrypto Data Engine (Fastify) is running on: ${await app.getUrl()}`);
 }
 bootstrap();
