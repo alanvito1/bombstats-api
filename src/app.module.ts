@@ -4,6 +4,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { BullModule } from '@nestjs/bullmq';
 import { BlockchainModule } from './blockchain/blockchain.module';
 import { WorkersModule } from './workers/workers.module';
+import { ApiModule } from './api/api.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { WorkersModule } from './workers/workers.module';
     }),
     BlockchainModule,
     WorkersModule,
+    ApiModule,
   ],
   controllers: [],
   providers: [],
