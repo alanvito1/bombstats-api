@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
 import { BullModule } from '@nestjs/bullmq';
+import { BlockchainModule } from './blockchain/blockchain.module';
+import { WorkersModule } from './workers/workers.module';
 
 @Module({
   imports: [
@@ -22,6 +24,14 @@ import { BullModule } from '@nestjs/bullmq';
         port: parseInt(process.env.REDIS_PORT || '6379'),
       },
     }),
+    BullModule.registerQueue({
+      name: 'ingestion-bsc',
+    }),
+    BullModule.registerQueue({
+      name: 'ingestion-polygon',
+    }),
+    BlockchainModule,
+    WorkersModule,
   ],
   controllers: [],
   providers: [],
