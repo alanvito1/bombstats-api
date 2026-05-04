@@ -22,7 +22,8 @@
     "migration:generate": "npm run typeorm:cli -- migration:generate -d src/database/data-source.ts",
     "migration:create": "npm run typeorm:cli -- migration:create",
     "migration:run": "npm run typeorm:cli -- migration:run -d src/database/data-source.ts",
-    "migration:revert": "npm run typeorm:cli -- migration:revert -d src/database/data-source.ts"
+    "migration:revert": "npm run typeorm:cli -- migration:revert -d src/database/data-source.ts",
+    "security:audit": "npm audit --audit-level=high"
   },
   "dependencies": {
     "@nestjs/bullmq": "^10.1.1",
