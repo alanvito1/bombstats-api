@@ -421,7 +421,11 @@ export class UpdateStakeRanking {
   async createWallets(allTransactions: Transaction[], network: WalletNetwork) {
     //remove duplicates
     const walletsIds = Array.from(
-      new Set(allTransactions.map((item) => item.from.toLowerCase())),
+      new Set(
+        allTransactions
+          .map((item) => item.from?.toLowerCase())
+          .filter((walletId): walletId is string => Boolean(walletId)),
+      ),
     );
     const wallets = walletsIds.map((walletId) => ({
       walletId,
@@ -663,24 +667,26 @@ export class UpdateStakeRanking {
 
   async getTransactionsPolygon(startBlock: number | string) {
     return this.getTransactions([], {
-      url: 'https://api.polygonscan.com/api',
+      url: 'https://api.etherscan.io/v2/api',
       address: process.env.CONTRACT_STAKE_POLYGON,
-      apiKey: 'GSIGZP5QJ5NRNNDPHPKTFH4FCU4FYG4D3C',
+      apiKey: process.env.ETHERSCAN_KEY!,
       startBlock,
+      chainid: 137,
     });
   }
 
   async getTransactionsBSC(startBlock: number | string) {
     return this.getTransactions([], {
-      url: 'https://api.bscscan.com/api',
+      url: 'https://api.etherscan.io/v2/api',
       address: process.env.CONTRACT_STAKE_BSC!,
-      apiKey: '4C3DSD3PYF1RFPHVHER2MD8B4U36RPF1NC',
+      apiKey: process.env.ETHERSCAN_KEY!,
       startBlock,
+      chainid: 56,
     });
   }
   async getTransactions(
     values: Transaction[] = [],
-    { url, address, apiKey, startBlock = 0 }: any,
+    { url, address, apiKey, startBlock = 0, chainid }: any,
   ): Promise<Transaction[]> {
     const { data } = await axios.get(url, {
       params: {
@@ -693,6 +699,7 @@ export class UpdateStakeRanking {
         apikey: apiKey,
         page: 1,
         offset: 10000,
+        chainid,
       },
     });
 
@@ -702,6 +709,7 @@ export class UpdateStakeRanking {
         address,
         apiKey,
         startBlock: data.result[9999].blockNumber,
+        chainid,
       });
     }
 

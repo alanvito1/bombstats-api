@@ -330,10 +330,11 @@ export class OpenSeaService {
 
   async getTokenIds(collection: string = 'bomber-hero-polygon') {
     let tokensIds: ITokenOpenSea[] = [];
-    let next: undefined | string | null = null;
+    let next: undefined | string | null = undefined;
 
+    // return tokensIds
     try {
-      while (next === null || next) {
+      while (next === undefined || next) {
         const data = await this.getTokensIdsInternal(collection, next);
         tokensIds = [...tokensIds, ...data.tokensIds];
         next = data.next;
